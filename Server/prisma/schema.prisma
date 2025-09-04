@@ -1,0 +1,50 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model Event {
+  id             Int       @id @default(autoincrement())
+  title          String
+  description    String
+  location       String
+  date           DateTime
+  totalSeats     Int
+  availableSeats Int
+  price          Decimal   @db.Decimal(10, 2)
+  img            String?
+  bookings       Booking[]
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+}
+
+model Booking {
+  id          Int           @id @default(autoincrement())
+  event       Event         @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  eventId     Int
+  name        String
+  email       String
+  mobile      String
+  quantity    Int
+  totalAmount Decimal       @db.Decimal(10, 2)
+  bookingDate DateTime      @default(now())
+  status      BookingStatus @default(CONFIRMED)
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+}
+
+enum BookingStatus {
+  CONFIRMED
+  CANCELLED
+}
+
+model Admin {
+  id        Int      @id @default(autoincrement())
+  email     String   @unique
+  password  String
+  createdAt DateTime @default(now())
+}
